@@ -1,0 +1,21 @@
+name: Remote Bulb Control
+
+# This allows you to run the action manually from the "Actions" tab
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'Command to send (ON/OFF)'
+        required: true
+        default: 'ON'
+
+jobs:
+  ping-adafruit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push Data to Adafruit IO
+        run: |
+          curl -X POST https://io.adafruit.com/api/v2/${{ secrets.ADAFRUIT_USER }}/feeds/bulb-control/data \
+            -H "Content-Type: application/json" \
+            -H "X-AIO-Key: ${{ secrets.ADAFRUIT_KEY }}" \
+            -d "{\"value\": \"${{ github.event.inputs.command }}\"}"
